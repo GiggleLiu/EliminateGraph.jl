@@ -1,6 +1,6 @@
 using Combinatorics
 using Graphs
-
+export line_graph,find_unconfined_vertices,confined_set,twin_filter,short_funnel_filter,desk_filter,one_layer_effective_vertex_filter,funnel_filter,count_o_path,has_fine_structure,four_cycle_filter,vertex_filter
 
 
 function find_children(g::SimpleGraph, vertex_set::Vector{Int})
@@ -171,8 +171,9 @@ function short_funnel_filter(g::SimpleGraph)
         end
         rem_vertices!(g_new, [a,b])
         funnel_pair = first_short_funnel(g_new)
+        return (g_new,1)
     end
-    return (g_new,1)
+    return (g,0)
 end
 
 
@@ -354,6 +355,7 @@ function funnel_filter(g::SimpleGraph)
         g_new1 = copy(g)
         g_new2 = copy(g)
         rem_vertices!(g_new1, vcat([a],neighbors(g,a)))
+        #println(":",nv(g_new2),",",length(vcat(S_b,vcat([neighbors(g,nb) for nb in S_b]...))))
         rem_vertices!(g_new2, vcat(S_b,vcat([neighbors(g,nb) for nb in S_b]...)))
         return (g_new1,1),(g_new2,length(S_b))
     end
@@ -472,7 +474,6 @@ function optimal_four_cycle(g::SimpleGraph)
     for quad in cycles_of_length_4
         a, b, c, d = quad
         three_degree_num = count(v -> degree(g, v) == 3, [a,b,c,d])
-        println(three_degree_num)
         if three_degree_num > max_three_degree_num
             max_three_degree_num = three_degree_num
             optimal_quad = [a,b,c,d]
@@ -538,6 +539,8 @@ function vertex_filter(g::SimpleGraph)
         g_new2 = copy(g)
         rem_vertices!(g_new1, [ov])
         rem_vertices!(g_new2, vcat(S_ov,vcat([neighbors(g,nov) for nov in S_ov]...)))
+        return (g_new1,0),(g_new2,length(S_ov))
     end
-    return (g_new1,0),(g_new2,length(S_ov))
+    return "error"
 end
+

@@ -1,4 +1,5 @@
 # the algorithm in Confining sets and avoiding bottleneck cases: A simple maximum independent set algorithm in degree-3 graphs
+export xiao2013
 
 function xiao2013(g::SimpleGraph)
     return _xiao2013(g)
@@ -25,24 +26,44 @@ function _xiao2013(g::SimpleGraph)
             return 1 + _xiao2013(remove_vertex(g, neighbors(g, vmin) ∪ vmin))
         elseif degmin == 2
             return _xiao2013(folding(g, vmin))
-        elseif has_unconfined_vertex(g)
-
-        elseif has_twin(g)
-
-        elseif has_short_funnel(g) || has_desk(g)
-
-        elseif has_effective_vertex(g)
-
-        elseif has_three_funnel(g) || has_four_funnel(g)
-
-        elseif has_four_cycle(g)
-
-        else
-            v = optimal_vertex(g)
-            return max(_xiao2013(remove_vertex(g, v)), )
         end
+        unconfined_vertices = find_unconfined_vertices(g)
+        if length(unconfined_vertices) != 0
+            rem_vertices!(g,[unconfined_vertices[1]])
+            return _xiao2013(g)
+        end
+        g_new = twin_filter(g)
+        if g_new != g
+            return _xiao2013(g_new)
+        end
+        filter_result = short_funnel_filter(g)
+        if filter_result[2] == 1
+            return _xiao2013(filter_result[1])+1
+        end
+        g_new = desk_filter(g)
+        if g_new != g
+            return _xiao2013(g_new)
+        end
+        branches = one_layer_effective_vertex_filter(g)
+        if length(branches) == 2
+            return max(_xiao2013(branches[1][1])+branches[1][2], _xiao2013(branches[2][1])+branches[2][2])
+        end
+        branches = funnel_filter(g)
+        if length(branches) == 2
+            return max(_xiao2013(branches[1][1])+branches[1][2], _xiao2013(branches[2][1])+branches[2][2])
+        end
+        branches = four_cycle_filter(g)
+        if length(branches) == 2
+            return max(_xiao2013(branches[1][1])+branches[1][2], _xiao2013(branches[2][1])+branches[2][2])
+        end
+        if nv(g) != 0
+            branches = vertex_filter(g)
+            return max(_xiao2013(branches[1][1])+branches[1][2], _xiao2013(branches[2][1])+branches[2][2])
+        end
+        return 0
     end
 end
+
 
 function remove_vertex(g, v)
     g, vs = induced_subgraph(g, setdiff(vertices(g), v))

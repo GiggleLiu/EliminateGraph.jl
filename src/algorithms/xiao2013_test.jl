@@ -1,8 +1,10 @@
 using Pkg
-Pkg.activate("../../..")
+Pkg.activate("../..")
 using Test
 using Graphs
-include("xiao2013_utils.jl")
+using EliminateGraphs
+using Random
+
 
 @testset "line graph" begin
     edges = [(1,2),(1,4),(1,5),(2,3),(2,4),(2,5),(3,4),(3,5)]
@@ -117,4 +119,14 @@ end
     g_after = vertex_filter(example_g)
     @test g_after[1] == (SimpleGraph{Int64}(4, [[5], [6], [7], [8], [1], [2], [3], [4]]), 0)
     @test g_after[2] == (SimpleGraph{Int64}(0, Vector{Int64}[]), 5)
+end
+
+
+@testset "total process" begin
+    Random.seed!(1234)
+    g = random_regular_graph(100, 3)
+    eg = EliminateGraph(g)
+    mis_size_standard = mis2(eg)
+    mis_size = xiao2013(g)
+    @test mis_size_standard == mis_size
 end
