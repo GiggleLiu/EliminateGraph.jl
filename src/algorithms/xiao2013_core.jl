@@ -60,7 +60,6 @@ function _xiao2013(g::SimpleGraph)
         end
         branches = vertex_filter(g)
         return max(_xiao2013(branches[1][1])+branches[1][2], _xiao2013(branches[2][1])+branches[2][2])
-        return 0
     end
 end
 
