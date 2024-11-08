@@ -5,6 +5,8 @@ function xiao2013(g::SimpleGraph)
     return _xiao2013(g)
 end
 
+
+#mis config should also be a part of the return
 function _xiao2013(g::SimpleGraph)
     if nv(g) == 0
         #@show "0" # CHECKED
@@ -34,7 +36,7 @@ function _xiao2013(g::SimpleGraph)
         end
         g_new = twin_filter(g)
         if g_new != g
-            return _xiao2013(g_new)
+            return _xiao2013(g_new)+2
         end
         filter_result = short_funnel_filter(g)
         if filter_result[2] == 1
@@ -56,10 +58,8 @@ function _xiao2013(g::SimpleGraph)
         if length(branches) == 2
             return max(_xiao2013(branches[1][1])+branches[1][2], _xiao2013(branches[2][1])+branches[2][2])
         end
-        if nv(g) != 0
-            branches = vertex_filter(g)
-            return max(_xiao2013(branches[1][1])+branches[1][2], _xiao2013(branches[2][1])+branches[2][2])
-        end
+        branches = vertex_filter(g)
+        return max(_xiao2013(branches[1][1])+branches[1][2], _xiao2013(branches[2][1])+branches[2][2])
         return 0
     end
 end
