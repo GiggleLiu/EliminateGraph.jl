@@ -110,7 +110,7 @@ end
 function twin_filter(g::SimpleGraph)
     g_new = copy(g)
     twin_pair = first_twin(g_new)
-    while length(twin_pair) != 0
+    if length(twin_pair) != 0
         #vertices_to_keep = setdiff(vertices(g_new), vcat(neighbors(g_new, twin_pair[1]),twin_pair))
         #g_new = induced_subgraph(g_new, vertices_to_keep)
         neighbor = copy(neighbors(g_new, twin_pair[1]))
@@ -121,7 +121,6 @@ function twin_filter(g::SimpleGraph)
             end
         end
         rem_vertices!(g_new, vcat(twin_pair,neighbor))
-        twin_pair = first_twin(g_new)
     end
     return g_new
 end
@@ -158,7 +157,7 @@ end
 function short_funnel_filter(g::SimpleGraph)
     g_new = copy(g)
     funnel_pair = first_short_funnel(g_new)
-    while funnel_pair != nothing
+    if funnel_pair != nothing
         a,b = funnel_pair
         N_a = neighbors(g_new, a)
         N_b = neighbors(g_new, b)
@@ -170,7 +169,6 @@ function short_funnel_filter(g::SimpleGraph)
             end
         end
         rem_vertices!(g_new, [a,b])
-        funnel_pair = first_short_funnel(g_new)
         return (g_new,1)
     end
     return (g,0)
@@ -198,7 +196,7 @@ end
 function desk_filter(g::SimpleGraph)
     g_new = copy(g)
     desk_group = first_desk(g_new)
-    while desk_group != nothing
+    if desk_group != nothing
         a,b,c,d = desk_group
         for u in setdiff(vcat(neighbors(g_new, a),neighbors(g_new, c)),vcat(neighbors(g_new, b),neighbors(g_new, d),[b,d]))
             for v in setdiff(vcat(neighbors(g_new, b),neighbors(g_new, d)),vcat(neighbors(g_new, a),neighbors(g_new, c),[a,c]))
@@ -208,7 +206,6 @@ function desk_filter(g::SimpleGraph)
             end
         end
         rem_vertices!(g_new, [a,b,c,d])
-        desk_group = first_desk(g_new)
     end
     return g_new
 end
